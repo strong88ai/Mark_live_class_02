@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mark's AI Class · Day 2</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root {
+  --bg: #f5f3f0;
+  --text: #1a1a2e;
+  --dim: #6b6b80;
+  --accent: #4361ee;
+  --pink: #e63946;
+  --mint: #2ec4b6;
+  --orange: #ff6b35;
+}
+.reveal-viewport { background: var(--bg); }
+.reveal { font-family: 'Pretendard Variable', sans-serif; color: var(--text); font-size: 18px; }
+.reveal h1,.reveal h2,.reveal h3,.reveal h4 { font-family: 'Pretendard Variable', sans-serif; color: var(--text); text-transform: none; letter-spacing: -0.03em; }
+.reveal h2 { font-size: 1.7em; font-weight: 900; margin-bottom: 6px; }
+.reveal h3 { font-size: 1.1em; font-weight: 800; }
+.reveal p { line-height: 1.6; }
+.reveal section { text-align: center; }
+.reveal .controls { color: var(--accent); }
+
+.badge { font-size: 0.58em; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; display: inline-block; }
+.badge-blue { color: var(--accent); }
+.badge-pink { color: var(--pink); }
+.badge-mint { color: var(--mint); }
+.badge-orange { color: var(--orange); }
+
+.section-title { font-size: 2.2em; font-weight: 900; margin-bottom: 12px; }
+.section-sub { font-size: 0.85em; color: var(--dim); }
+
+/* 손그림 효과 */
+.hb, .hc, .hu, .hh, .hs { position: relative; display: inline; }
+.hb { margin: 0 8px; }
+.hc { margin: 0 10px; }
+.hb::after { content:''; position:absolute; top:-4px; left:-8px; right:-8px; bottom:-4px; border:2.5px solid var(--pink); border-radius:4px; opacity:0; pointer-events:none; }
+.present .hb::after { animation: drawBox 0.5s ease forwards; }
+.hc::after { content:''; position:absolute; top:-8px; left:-12px; right:-12px; bottom:-8px; border:2.5px solid var(--accent); border-radius:50%; opacity:0; pointer-events:none; }
+.present .hc::after { animation: drawCircle 0.5s ease forwards; }
+.hu::after { content:''; position:absolute; left:0; right:0; bottom:-4px; height:3px; background:var(--accent); border-radius:2px; opacity:0; pointer-events:none; transform:scaleX(0); transform-origin:left; }
+.present .hu::after { animation: drawLine 0.4s ease forwards; }
+.hh::after { content:''; position:absolute; top:-1px; left:-4px; right:-4px; bottom:-1px; border-radius:4px; z-index:-1; opacity:0; pointer-events:none; transform:scaleX(0); transform-origin:left; }
+.present .hh::after { animation: drawHighlight 0.4s ease forwards; }
+.hs::after { content:''; position:absolute; left:-2px; right:-2px; top:52%; height:2.5px; background:var(--pink); border-radius:2px; opacity:0; pointer-events:none; transform:scaleX(0); transform-origin:left; }
+.present .hs::after { animation: drawLine 0.4s ease forwards; }
+
+.hb.c-mint::after { border-color: var(--mint); }
+.hb.c-orange::after { border-color: var(--orange); }
+.hb.c-accent::after { border-color: var(--accent); }
+.hc.c-pink::after { border-color: var(--pink); }
+.hc.c-mint::after { border-color: var(--mint); }
+.hc.c-orange::after { border-color: var(--orange); }
+.hu.u-mint::after { background: var(--mint); }
+.hu.u-orange::after { background: var(--orange); }
+.hu.u-pink::after { background: var(--pink); }
+.hh.h-yellow::after { background: rgba(255,230,100,0.4); }
+.hh.h-pink::after { background: rgba(230,57,70,0.12); }
+.hh.h-mint::after { background: rgba(46,196,178,0.15); }
+.hh.h-blue::after { background: rgba(67,97,238,0.12); }
+
+.d1::after { animation-delay:0.3s!important; }
+.d2::after { animation-delay:0.6s!important; }
+.d3::after { animation-delay:0.9s!important; }
+.d4::after { animation-delay:1.2s!important; }
+
+@keyframes drawBox { 0%{opacity:0;transform:scaleX(0)} 50%{opacity:1;transform:scaleX(1) scaleY(0.3)} 100%{opacity:1;transform:scaleX(1) scaleY(1)} }
+@keyframes drawCircle { 0%{opacity:0;transform:scale(0.5) rotate(-5deg)} 60%{opacity:1;transform:scale(1.05) rotate(2deg)} 100%{opacity:1;transform:scale(1) rotate(0)} }
+@keyframes drawLine { 0%{transform:scaleX(0);opacity:0} 100%{transform:scaleX(1);opacity:1} }
+@keyframes drawHighlight { 0%{transform:scaleX(0);opacity:0} 100%{transform:scaleX(1);opacity:1} }
+
+.card { background:#fff; border-radius:14px; padding:22px 26px; box-shadow:0 2px 10px rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.05); text-align:left; }
+.stat-grid { display:flex; gap:18px; justify-content:center; margin:24px 0 18px; align-items:stretch; }
+.stat-card { background:#fff; border-radius:14px; padding:24px 30px; min-width:180px; box-shadow:0 2px 10px rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.05); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+.stat-card .card-icon { font-size:1.8em; margin-bottom:8px; }
+.stat-card .card-title { font-size:0.95em; font-weight:800; margin-bottom:4px; }
+.stat-num { font-size:1.9em; font-weight:900; line-height:1.3; margin-bottom:6px; }
+.stat-desc { font-size:0.78em; color:var(--dim); line-height:1.5; }
+.compare-wrap { display:flex; gap:20px; justify-content:center; margin-top:20px; }
+.compare-box { background:#fff; border-radius:14px; padding:24px 28px; min-width:280px; text-align:left; box-shadow:0 2px 10px rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.05); }
+.compare-box h3 { margin:0 0 12px 0; font-size:1em; }
+.compare-box ul { list-style:none; padding:0; margin:0; }
+.compare-box li { padding:4px 0; font-size:0.75em; color:var(--dim); }
+.benefit-grid { display:flex; gap:18px; justify-content:center; margin-top:22px; }
+.benefit-card { background:#fff; border-radius:14px; padding:22px 20px; width:210px; text-align:left; box-shadow:0 2px 10px rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.05); }
+.benefit-card .num { font-size:1.3em; font-weight:900; margin-bottom:8px; }
+.benefit-card h4 { font-size:0.82em; font-weight:700; margin:0 0 6px 0; line-height:1.5; }
+.benefit-card p { font-size:0.68em; color:var(--dim); margin:0; line-height:1.5; }
+.interact { text-align:center!important; }
+.interact-icon { font-size:2.6em; margin-bottom:6px; }
+.present .interact-icon { animation: pulse 2s ease infinite; }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+.interact h2 { margin-bottom:6px; }
+.interact-sub { font-size:0.8em; color:var(--dim); margin-bottom:20px; }
+.interact-btns { display:flex; gap:14px; justify-content:center; }
+.interact-btn { padding:10px 28px; border-radius:12px; font-size:0.82em; font-weight:700; }
+.btn-yes { background:linear-gradient(135deg,var(--accent),var(--mint)); color:#fff; }
+.btn-no { background:#fff; color:var(--dim); border:1px solid rgba(0,0,0,0.08); }
+.step { display:flex; gap:14px; align-items:flex-start; margin:10px 0; text-align:left; }
+.step-n { width:30px; height:30px; border-radius:10px; background:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.78em; flex-shrink:0; color:#fff; }
+.step-n.n-mint { background:var(--mint); }
+.step-n.n-orange { background:var(--orange); }
+.step-body h4 { margin:0 0 3px 0; font-size:0.82em; font-weight:700; }
+.step-body p { margin:0; font-size:0.7em; color:var(--dim); line-height:1.5; }
+.code-box { background:rgba(0,0,0,0.03); border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:14px 18px; font-family:'Consolas','Monaco',monospace; font-size:0.7em; color:var(--text); line-height:1.7; text-align:left; white-space:pre-wrap; position:relative; margin-top:8px; }
+.code-box-sm { font-size:0.65em; }
+.code-box-xs { font-size:0.62em; }
+.copy-btn { position:absolute; top:8px; right:8px; background:#fff; border:1px solid rgba(0,0,0,0.08); border-radius:6px; padding:3px 10px; font-size:0.8em; color:var(--dim); cursor:pointer; font-family:'Pretendard Variable',sans-serif; }
+.copy-btn:hover { background:var(--accent); color:#fff; border-color:var(--accent); }
+.lang-btn { position:absolute; top:8px; right:52px; background:#fff; border:1px solid rgba(46,196,178,0.3); border-radius:6px; padding:3px 10px; font-size:0.8em; color:var(--mint); cursor:pointer; font-family:'Pretendard Variable',sans-serif; font-weight:600; }
+.lang-btn:hover { background:var(--mint); color:#fff; }
+.lang-btn.active { background:var(--mint); color:#fff; }
+.tbl { width:100%; border-collapse:collapse; margin-top:14px; font-size:0.72em; text-align:left; }
+.tbl th { background:rgba(67,97,238,0.06); padding:10px 14px; font-weight:700; border-bottom:2px solid rgba(67,97,238,0.15); }
+.tbl td { padding:10px 14px; border-bottom:1px solid rgba(0,0,0,0.05); color:var(--dim); }
+.tbl tr:last-child td { border-bottom:none; }
+.timeline { display:flex; gap:10px; justify-content:center; margin-top:20px; align-items:stretch; }
+.tl-item { background:#fff; border-radius:14px; padding:16px 22px; font-size:0.85em; font-weight:700; box-shadow:0 2px 8px rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.06); line-height:1.5; display:flex; align-items:center; justify-content:center; text-align:center; min-width:100px; }
+.tl-arrow { color:var(--accent); font-size:1.1em; display:flex; align-items:center; flex-shrink:0; }
+.tip-box { background:rgba(67,97,238,0.05); border-left:3px solid var(--accent); border-radius:0 10px 10px 0; padding:14px 18px; text-align:left; margin-top:12px; font-size:0.75em; color:var(--text); line-height:1.6; }
+.warn-box { background:rgba(230,57,70,0.05); border-left:3px solid var(--pink); border-radius:0 10px 10px 0; padding:14px 18px; text-align:left; margin-top:12px; font-size:0.75em; color:var(--text); line-height:1.6; }
+.break-slide { text-align:center!important; }
+.break-icon { font-size:3em; margin-bottom:10px; }
+.break-timer { font-size:3em; font-weight:900; color:var(--accent); margin:16px 0; }
+.mission-grid { display:flex; gap:20px; justify-content:center; margin-top:20px; flex-wrap:wrap; }
+.mission-card { background:#fff; border-radius:14px; padding:24px; width:220px; text-align:left; box-shadow:0 2px 10px rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.05); }
+.mission-card h3 { font-size:0.9em; margin:0 0 10px 0; }
+.mission-card p { font-size:0.7em; color:var(--dim); line-height:1.6; margin:0; }
+.meta-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:16px; }
+.meta-chip { display:flex; align-items:center; gap:5px; font-size:0.65em; color:var(--dim); padding:6px 14px; border-radius:10px; background:#fff; border:1px solid rgba(0,0,0,0.06); font-weight:500; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:14px; }
+.tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+.tag { background:rgba(67,97,238,0.06); color:var(--accent); padding:4px 10px; border-radius:8px; font-size:0.65em; font-weight:600; }
+.tag-mint { background:rgba(46,196,178,0.08); color:var(--mint); }
+.tag-orange { background:rgba(255,107,53,0.08); color:var(--orange); }
+.dim { color:var(--dim); }
+.small { font-size:0.75em; }
+.mt12 { margin-top:12px; }
+.mt20 { margin-top:20px; }
+.mb8 { margin-bottom:8px; }
+
+.progress-bar-custom { position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg,var(--accent),var(--mint)); z-index:100; transition:width 0.4s ease; }
+.page-btn { position:fixed; bottom:14px; right:14px; z-index:200; height:34px; padding:0 14px; border-radius:10px; background:#fff; border:1px solid rgba(0,0,0,0.08); color:var(--dim); font-size:0.65em; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px; font-family:'Pretendard Variable',sans-serif; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+.page-btn:hover { border-color:var(--accent); color:var(--accent); }
+.page-btn .cp { color:var(--accent); font-weight:800; }
+
+.overview-overlay { position:fixed; top:0; left:0; right:0; bottom:0; z-index:300; background:var(--bg); overflow-y:auto; display:none; padding:20px; }
+.overview-overlay.open { display:block; }
+.overview-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; max-width:1400px; margin:0 auto; }
+.overview-item { background:#fff; border-radius:10px; border:2px solid transparent; cursor:pointer; overflow:hidden; aspect-ratio:16/9; position:relative; box-shadow:0 2px 8px rgba(0,0,0,0.06); transition:border-color 0.2s, transform 0.15s; }
+.overview-item:hover { border-color:var(--accent); transform:translateY(-2px); }
+.overview-item.active { border-color:var(--accent); box-shadow:0 0 0 3px rgba(67,97,238,0.2); }
+.overview-item.dragging { opacity:0.4; transform:scale(0.95); }
+.overview-item.drag-over { border-color:var(--accent); border-style:dashed; background:rgba(67,97,238,0.03); }
+.overview-hint { text-align:center; font-size:12px; color:var(--dim); margin-bottom:14px; font-family:'Pretendard Variable',sans-serif; }
+.overview-hint span { background:rgba(67,97,238,0.08); color:var(--accent); padding:2px 8px; border-radius:4px; font-weight:600; }
+.overview-num { position:absolute; top:6px; left:8px; background:rgba(0,0,0,0.5); color:#fff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px; z-index:1; }
+.overview-close { position:fixed; top:16px; right:16px; z-index:301; width:40px; height:40px; border-radius:50%; background:#fff; border:1px solid rgba(0,0,0,0.08); font-size:18px; cursor:pointer; display:none; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.1); font-family:'Pretendard Variable',sans-serif; }
+.overview-overlay.open ~ .overview-close { display:flex; }
+
+.click-nav { position:fixed; top:0; bottom:0; width:15%; z-index:10; cursor:pointer; opacity:0; transition:opacity 0.2s; }
+.click-nav:hover { opacity:1; }
+.click-nav-left { left:0; background:linear-gradient(90deg, rgba(0,0,0,0.03), transparent); }
+.click-nav-right { right:0; background:linear-gradient(-90deg, rgba(0,0,0,0.03), transparent); }
+
+.edit-toggle { position:fixed; top:14px; right:14px; z-index:200; width:36px; height:36px; border-radius:10px; background:#fff; border:1px solid rgba(0,0,0,0.08); color:var(--dim); font-size:0.9em; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+.edit-toggle:hover { border-color:var(--accent); color:var(--accent); }
+.edit-toggle.active { background:var(--accent); border-color:var(--accent); }
+
+.edit-bar { position:fixed; top:0; left:0; right:0; height:42px; background:#fff; border-bottom:2px solid var(--accent); z-index:250; display:none; align-items:center; justify-content:space-between; padding:0 20px; box-shadow:0 2px 12px rgba(0,0,0,0.08); font-family:'Pretendard Variable',sans-serif; }
+.edit-bar.open { display:flex; }
+.edit-bar-label { font-size:13px; font-weight:700; color:var(--accent); }
+.edit-bar-actions { display:flex; gap:8px; }
+.bar-btn { padding:5px 14px; border-radius:8px; border:1px solid rgba(0,0,0,0.08); background:#fafafa; font-size:12px; font-weight:600; cursor:pointer; font-family:'Pretendard Variable',sans-serif; transition:all 0.15s; }
+.bar-save { background:var(--accent); color:#fff; border-color:var(--accent); }
+.bar-save:hover { background:#3451d4; }
+.bar-reset { color:var(--pink); border-color:rgba(230,57,70,0.2); background:#fff0f0; }
+.bar-reset:hover { background:#ffe0e0; }
+.bar-fx { background:rgba(67,97,238,0.08); color:var(--accent); border-color:rgba(67,97,238,0.2); }
+.bar-fx:hover { background:rgba(67,97,238,0.15); }
+.bar-close { color:var(--dim); }
+.bar-close:hover { background:#eee; }
+
+.float-toolbar { position:fixed; z-index:260; background:#fff; border:1px solid rgba(0,0,0,0.1); border-radius:10px; padding:6px 10px; display:none; align-items:center; gap:6px; box-shadow:0 4px 20px rgba(0,0,0,0.12); font-family:'Pretendard Variable',sans-serif; }
+.float-toolbar.show { display:flex; }
+.ft-group { display:flex; align-items:center; gap:4px; }
+.ft-sep { width:1px; height:22px; background:rgba(0,0,0,0.08); margin:0 2px; }
+.ft-btn { width:28px; height:28px; border-radius:6px; border:1.5px solid rgba(0,0,0,0.08); background:#fff; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; font-family:'Pretendard Variable',sans-serif; }
+.ft-btn:hover { background:rgba(67,97,238,0.08); border-color:var(--accent); }
+.ft-remove { color:var(--pink); }
+.ft-remove:hover { background:rgba(230,57,70,0.06); border-color:var(--pink); }
+.ft-bold { font-size:13px; }
+#ftFontSize { padding:3px 4px; border:1px solid rgba(0,0,0,0.08); border-radius:6px; font-size:11px; font-family:'Pretendard Variable',sans-serif; background:#fafafa; width:56px; }
+#ftColor { width:26px; height:26px; border:1px solid rgba(0,0,0,0.08); border-radius:6px; padding:0; cursor:pointer; background:transparent; }
+
+.fx-panel { position:fixed; top:50px; right:14px; z-index:260; width:300px; background:#fff; border:1px solid rgba(0,0,0,0.08); border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,0.12); display:none; font-family:'Pretendard Variable',sans-serif; }
+.fx-panel.open { display:block; animation:panelIn 0.2s ease; }
+@keyframes panelIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+.fx-panel-header { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid rgba(0,0,0,0.05); }
+.fx-panel-close { width:26px; height:26px; border:none; background:transparent; font-size:14px; cursor:pointer; border-radius:6px; color:var(--dim); }
+.fx-panel-close:hover { background:rgba(0,0,0,0.04); }
+.fx-panel-body { padding:12px 16px 16px; }
+.fx-section { margin-bottom:12px; }
+.fx-label { font-size:11px; font-weight:600; color:var(--dim); margin-bottom:6px; }
+.fx-palette { display:flex; flex-wrap:wrap; gap:4px; }
+.fx-pick, .fx-delay { padding:4px 10px; border-radius:6px; border:1.5px solid rgba(0,0,0,0.08); background:#fff; font-size:11px; font-weight:500; cursor:pointer; font-family:'Pretendard Variable',sans-serif; color:var(--text); transition:all 0.15s; }
+.fx-pick:hover, .fx-delay:hover { background:rgba(67,97,238,0.05); }
+.fx-pick.active { border-color:var(--accent); background:rgba(67,97,238,0.08); color:var(--accent); font-weight:700; }
+.fx-delay.active { border-color:var(--accent); background:rgba(67,97,238,0.08); color:var(--accent); font-weight:700; }
+.fx-apply-btn { width:100%; padding:8px; border-radius:8px; border:none; background:var(--accent); color:#fff; font-size:12px; font-weight:700; cursor:pointer; font-family:'Pretendard Variable',sans-serif; margin-bottom:6px; }
+.fx-apply-btn:hover { background:#3451d4; }
+.fx-remove-btn { width:100%; padding:8px; border-radius:8px; border:1px solid rgba(230,57,70,0.2); background:#fff0f0; color:var(--pink); font-size:12px; font-weight:700; cursor:pointer; font-family:'Pretendard Variable',sans-serif; }
+.fx-remove-btn:hover { background:#ffe0e0; }
+
+.editing-active .reveal .slides > section.present { outline:2px dashed var(--accent); outline-offset:4px; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar-custom" id="progressBar"></div>
+
+<div class="overview-overlay" id="overviewOverlay">
+  <div class="overview-hint"><span>드래그</span>로 슬라이드 순서를 변경할 수 있습니다</div>
+  <div class="overview-grid" id="overviewGrid"></div>
+</div>
+<button class="overview-close" id="overviewClose">✕</button>
+
+<div class="click-nav click-nav-left" id="navLeft"></div>
+<div class="click-nav click-nav-right" id="navRight"></div>
+
+<button class="edit-toggle" id="editToggle" title="수정모드">✏️</button>
+
+<div class="edit-bar" id="editBar">
+  <span class="edit-bar-label">✏️ 수정 모드</span>
+  <div class="edit-bar-actions">
+    <button class="bar-btn bar-save" id="btnSave">💾 저장</button>
+    <button class="bar-btn bar-reset" id="btnReset">↩ 원래대로</button>
+    <button class="bar-btn bar-fx" id="btnFxPanel">✨ 효과설정</button>
+    <button class="bar-btn bar-close" id="btnEditClose">✕ 닫기</button>
+  </div>
+</div>
+
+<div class="fx-panel" id="fxPanel">
+  <div class="fx-panel-header">
+    <span style="font-weight:700; font-size:13px;">✨ 효과 설정</span>
+    <button class="fx-panel-close" id="fxPanelClose">✕</button>
+  </div>
+  <div class="fx-panel-body">
+    <div class="fx-section">
+      <div class="fx-label">효과 종류 선택 후 텍스트를 드래그하세요</div>
+      <div class="fx-palette">
+        <button class="fx-pick active" data-type="hb">□ 빨간 박스</button>
+        <button class="fx-pick" data-type="hb c-accent">□ 파란 박스</button>
+        <button class="fx-pick" data-type="hb c-mint">□ 민트 박스</button>
+        <button class="fx-pick" data-type="hb c-orange">□ 오렌지 박스</button>
+        <button class="fx-pick" data-type="hc">○ 파란 동그라미</button>
+        <button class="fx-pick" data-type="hc c-mint">○ 민트 동그라미</button>
+        <button class="fx-pick" data-type="hc c-orange">○ 오렌지 동그라미</button>
+        <button class="fx-pick" data-type="hu">⎁ 파란 밑줄</button>
+        <button class="fx-pick" data-type="hu u-mint">⎁ 민트 밑줄</button>
+        <button class="fx-pick" data-type="hu u-orange">⎁ 오렌지 밑줄</button>
+        <button class="fx-pick" data-type="hh h-yellow">▬ 노란 형광펜</button>
+        <button class="fx-pick" data-type="hh h-pink">▬ 핑크 형광펜</button>
+        <button class="fx-pick" data-type="hh h-mint">▬ 민트 형광펜</button>
+        <button class="fx-pick" data-type="hs">— 취소선</button>
+      </div>
+    </div>
+    <div class="fx-section">
+      <div class="fx-label">딜레이</div>
+      <div class="fx-palette">
+        <button class="fx-delay active" data-delay="">없음</button>
+        <button class="fx-delay" data-delay="d1">0.3초</button>
+        <button class="fx-delay" data-delay="d2">0.6초</button>
+        <button class="fx-delay" data-delay="d3">0.9초</button>
+        <button class="fx-delay" data-delay="d4">1.2초</button>
+      </div>
+    </div>
+    <div class="fx-section">
+      <button class="fx-apply-btn" id="fxApply">✅ 효과 적용</button>
+      <button class="fx-remove-btn" id="fxRemove">✕ 효과 제거</button>
+    </div>
+  </div>
+</div>
+
+<div class="float-toolbar" id="floatToolbar">
+  <div class="ft-group">
+    <select id="ftFontSize"><option value="">크기</option><option value="12">12</option><option value="14">14</option><option value="16">16</option><option value="18">18</option><option value="20">20</option><option value="24">24</option><option value="28">28</option><option value="32">32</option><option value="36">36</option></select>
+  </div>
+  <div class="ft-sep"></div>
+  <div class="ft-group">
+    <button class="ft-btn ft-bold" id="ftBold"><b>B</b></button>
+    <input type="color" id="ftColor" value="#1a1a2e" title="글씨 색상">
+  </div>
+  <div class="ft-sep"></div>
+  <div class="ft-group">
+    <button class="ft-btn" data-fx="hb" title="박스">□</button>
+    <button class="ft-btn" data-fx="hc" title="동그라미">○</button>
+    <button class="ft-btn" data-fx="hu" title="밑줄">⎁</button>
+    <button class="ft-btn" data-fx="hh h-yellow" title="형광펜">▬</button>
+    <button class="ft-btn" data-fx="hs" title="취소선">—</button>
+    <button class="ft-btn ft-remove" data-fx="remove" title="효과제거">✕</button>
+  </div>
+</div>
+
+<button class="page-btn" id="overviewToggle">
+  <span class="cp" id="currentPage">1</span><span> / </span><span id="totalPages">55</span>
+  <span style="margin-left:4px;">전체보기</span>
+</button>
+
+<div class="reveal">
+<div class="slides">
+
+<!-- ============================================================ -->
+<!-- 오프닝 (1~6)                                                  -->
+<!-- ============================================================ -->
+
+<!-- 1. 타이틀 -->
+<section>
+  <div class="badge badge-orange">Mark's AI Class · Day 2</div>
+  <h2 style="font-size:1.9em;">Google Flow 이미지 제작 &<br>AI QR코드 아트 & 영상 생성</h2>
+  <p class="dim small mt12">어제 배운 프롬프트 능력을 실전 크리에이티브로, <span class="hh h-yellow d1">2시간 완성</span> 실습 과정</p>
+  <div class="meta-row mt20">
+    <div class="meta-chip">⏱ 총 2시간</div>
+    <div class="meta-chip">🛠 실습 3회 포함</div>
+    <div class="meta-chip">👋 초보자 대상</div>
+  </div>
+</section>
+
+<!-- 2. 1일차 복습 -->
+<section>
+  <div class="badge badge-blue">DAY 1 REVIEW</div>
+  <h2>어제 배운 것 <span class="hh h-blue d1">한 눈에</span></h2>
+  <div class="grid-2 mt20" style="max-width:650px; margin-left:auto; margin-right:auto;">
+    <div class="card">
+      <h3 style="font-size:0.9em;">⚙ 맞춤 설정</h3>
+      <p class="dim small mt12">모든 대화에 자동 적용되는<br>나만의 배경 정보 + 응답 규칙</p>
+      <div class="tags mt12">
+        <span class="tag">나에 대한 정보</span>
+        <span class="tag">응답 방식</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="font-size:0.9em;">🤖 GPTs</h3>
+      <p class="dim small mt12">특정 업무 전용으로 만든<br>나만의 AI 비서 챗봇</p>
+      <div class="tags mt12">
+        <span class="tag tag-mint">역할 정의</span>
+        <span class="tag tag-mint">행동 규칙</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. 오늘의 목표 -->
+<section>
+  <div class="badge badge-orange">TODAY'S GOAL</div>
+  <h2>오늘 배울 것</h2>
+  <div class="benefit-grid">
+    <div class="benefit-card">
+      <div class="num" style="color:var(--accent);">🎨</div>
+      <h4><span class="hu d1">AI 이미지</span> 직접 생성</h4>
+      <p>Google Flow로<br>프롬프트 5요소 마스터</p>
+    </div>
+    <div class="benefit-card">
+      <div class="num" style="color:var(--mint);">📱</div>
+      <h4><span class="hu u-mint d2">QR코드 아트</span> 제작</h4>
+      <p>예쁜 그림 + 100% 스캔<br>기능 동일한 QR코드</p>
+    </div>
+    <div class="benefit-card">
+      <div class="num" style="color:var(--orange);">🎬</div>
+      <h4>이미지 →<br><span class="hb c-orange d3">영상 변환</span></h4>
+      <p>사진 1장으로<br>AI 동영상 제작</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4. 시간 안내 -->
+<section>
+  <div class="badge badge-blue">TIME TABLE</div>
+  <h2>오늘 강의 흐름</h2>
+  <div class="timeline">
+    <div class="tl-item">🎨 1부 이미지<br><strong>60분</strong></div>
+    <div class="tl-arrow">→</div>
+    <div class="tl-item">🛠 실습 1</div>
+    <div class="tl-arrow">→</div>
+    <div class="tl-item">☕ 쉬는시간<br><strong>10분</strong></div>
+    <div class="tl-arrow">→</div>
+    <div class="tl-item">📱 2부 QR<br><strong>20분</strong></div>
+    <div class="tl-arrow">→</div>
+    <div class="tl-item">🛠 실습 2</div>
+    <div class="tl-arrow">→</div>
+    <div class="tl-item">🎬 3부 영상<br><strong>30분</strong></div>
+    <div class="tl-arrow">→</div>
+    <div class="tl-item">🛠 실습 3</div>
+  </div>
+</section>
+
+<!-- 5. 도구 비교 -->
+<section>
+  <div class="badge badge-blue">TOOL COMPARISON</div>
+  <h2>이미지 생성 도구 <span class="hu d1">비교</span></h2>
+  <div class="card mt20" style="max-width:650px; margin-left:auto; margin-right:auto;">
+    <table class="tbl">
+      <tr><th>구분</th><th><span class="hh h-yellow d2">Google Flow</span></th><th>ChatGPT</th><th>Gemini</th></tr>
+      <tr><td>동시 생성</td><td><strong>4장</strong></td><td>1장</td><td>1~2장</td></tr>
+      <tr><td>가격</td><td><strong>무료 무제한</strong></td><td>일 제한</td><td>무료 가능</td></tr>
+      <tr><td>특징</td><td>생성+편집+영상 통합</td><td>대화형 수정</td><td>구글 검색 연동</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- 6. Google Flow 접속 -->
+<section>
+  <div class="badge badge-blue">ACCESS</div>
+  <h2><span class="hc d1">Google Flow</span> 접속</h2>
+  <div class="card mt20" style="max-width:500px; margin-left:auto; margin-right:auto;">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-body">
+        <h4>Chrome 브라우저 열기</h4>
+        <p>Chrome 권장 (다른 브라우저 호환 제한)</p>
+      </div>
+    </div>
+    <div class="step mt12">
+      <div class="step-n">2</div>
+      <div class="step-body">
+        <h4>주소 입력</h4>
+        <p><span class="hu u-mint d2">labs.google/flow</span></p>
+      </div>
+    </div>
+    <div class="step mt12">
+      <div class="step-n">3</div>
+      <div class="step-body">
+        <h4>Google 계정 로그인</h4>
+        <p>구글 계정으로 바로 시작</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 1부 - 이미지 생성 (7~27)                                       -->
+<!-- ============================================================ -->
+
+<!-- 7. 섹션 타이틀 -->
+<section>
+  <div class="badge badge-blue">PART 1 · 60분</div>
+  <div class="section-title">Google Flow<br><span class="hh h-blue d1">이미지 생성</span></div>
+  <p class="section-sub">프롬프트 5요소를 마스터하면 어떤 AI 도구든 활용할 수 있습니다</p>
+</section>
+
+<!-- 8. 프롬프트 5요소 -->
+<section>
+  <div class="badge badge-blue">PROMPT FORMULA</div>
+  <h2>이미지 프롬프트 <span class="hc d1">5요소</span></h2>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="card-icon">👤</div>
+      <div class="card-title">대상</div>
+      <div class="stat-desc">누가/무엇이</div>
+    </div>
+    <div class="stat-card">
+      <div class="card-icon">🎨</div>
+      <div class="card-title">스타일</div>
+      <div class="stat-desc">아트/촬영 기법</div>
+    </div>
+    <div class="stat-card">
+      <div class="card-icon">🏞</div>
+      <div class="card-title">배경</div>
+      <div class="stat-desc">장소/공간</div>
+    </div>
+    <div class="stat-card">
+      <div class="card-icon">💫</div>
+      <div class="card-title">분위기</div>
+      <div class="stat-desc">감정/톤</div>
+    </div>
+    <div class="stat-card">
+      <div class="card-icon">📷</div>
+      <div class="card-title">기술 지정</div>
+      <div class="stat-desc">카메라/해상도</div>
+    </div>
+  </div>
+  <div class="tip-box" style="max-width:550px; margin-left:auto; margin-right:auto;">
+    💡 이 5요소는 <strong>모든 AI 이미지 도구</strong>에 공통으로 적용됩니다
+  </div>
+</section>
+
+<!-- 9. 요소1 - 대상 -->
+<section>
+  <div class="badge badge-blue">요소 1</div>
+  <h2>👤 <span class="hu d1">대상</span> — 누가/무엇이 등장하는지</h2>
+  <div class="card mt20" style="max-width:550px; margin-left:auto; margin-right:auto;">
+    <p style="font-size:0.78em; line-height:1.8; color:var(--dim);">
+      <strong>사람:</strong> 20대 한국 여성, 아이, 할머니<br>
+      <strong>동물:</strong> 골든리트리버 강아지, 고양이<br>
+      <strong>캐릭터:</strong> 클레이 마스코트, 로봇<br>
+      <strong>사물:</strong> 도넛, 커피잔, 간판
+    </p>
+  </div>
+</section>
+
+<!-- 10. 요소2 - 스타일 -->
+<section>
+  <div class="badge badge-blue">요소 2</div>
+  <h2>🎨 <span class="hu d1">스타일</span> — 아트 스타일/촬영 기법</h2>
+  <div class="tags mt20" style="justify-content:center; max-width:550px; margin-left:auto; margin-right:auto;">
+    <span class="tag">클레이 애니메이션</span>
+    <span class="tag">지브리 스타일</span>
+    <span class="tag tag-mint">팝업북</span>
+    <span class="tag tag-mint">미니어처 디오라마</span>
+    <span class="tag tag-orange">아이소메트릭</span>
+    <span class="tag tag-orange">매거진 스타일</span>
+    <span class="tag">실사 촬영</span>
+    <span class="tag">수채화</span>
+    <span class="tag tag-mint">레트로 픽셀아트</span>
+    <span class="tag tag-orange">홀로그래픽</span>
+  </div>
+</section>
+
+<!-- 11. 요소3 - 배경 -->
+<section>
+  <div class="badge badge-blue">요소 3</div>
+  <h2>🏞 <span class="hu d1">배경</span> — 장소/공간 설정</h2>
+  <div class="card mt20" style="max-width:550px; margin-left:auto; margin-right:auto;">
+    <p style="font-size:0.78em; line-height:1.8; color:var(--dim);">
+      <strong>실내:</strong> 아늑한 카페, 깔끔한 사무실, 베이커리<br>
+      <strong>실외:</strong> 뉴욕 타임스퀘어, 벚꽃길, 해변<br>
+      <strong>가상:</strong> 파스텔 그라데이션, 순백 스튜디오<br>
+      <strong>특수:</strong> 네온사인 거리, 골든아워 공원
+    </p>
+  </div>
+</section>
+
+<!-- 12. 요소4 - 분위기 -->
+<section>
+  <div class="badge badge-blue">요소 4</div>
+  <h2>💫 <span class="hu d1">분위기</span> — 감정/톤</h2>
+  <div class="tags mt20" style="justify-content:center; max-width:500px; margin-left:auto; margin-right:auto;">
+    <span class="tag">따뜻하고 포근한</span>
+    <span class="tag tag-mint">활기차고 에너지 넘치는</span>
+    <span class="tag tag-orange">고급스럽고 세련된</span>
+    <span class="tag">몽환적인</span>
+    <span class="tag tag-mint">미래적인</span>
+    <span class="tag tag-orange">잔잔하고 평화로운</span>
+    <span class="tag">빈티지한</span>
+    <span class="tag tag-mint">사이버펑크</span>
+  </div>
+</section>
+
+<!-- 13. 요소5 - 기술 지정 -->
+<section>
+  <div class="badge badge-blue">요소 5</div>
+  <h2>📷 <span class="hu d1">기술 지정</span> — 카메라/해상도</h2>
+  <div class="card mt20" style="max-width:550px; margin-left:auto; margin-right:auto;">
+    <p style="font-size:0.78em; line-height:1.8; color:var(--dim);">
+      <strong>카메라:</strong> Sony A7IV, Canon EOS R5<br>
+      <strong>렌즈:</strong> 85mm f/1.4, 35mm wide-angle<br>
+      <strong>조명:</strong> 자연광, 골든아워, 네온 백라이트<br>
+      <strong>색온도:</strong> 따뜻한 톤(3200K), 차가운 톤(5600K)
+    </p>
+  </div>
+  <div class="tip-box mt12" style="max-width:550px; margin-left:auto; margin-right:auto;">
+    💡 기술 지정은 <span class="hu u-orange d2">실사 스타일</span>에서 특히 효과적입니다
+  </div>
+</section>
+
+<!-- 14. 소통 체크 ① -->
+<section class="interact">
+  <div class="interact-icon">💬</div>
+  <h2>5요소 이해되셨나요?</h2>
+  <p class="interact-sub">대상 + 스타일 + 배경 + 분위기 + 기술 지정</p>
+  <div class="interact-btns">
+    <div class="interact-btn btn-yes">⭕ 이해됐어요!</div>
+    <div class="interact-btn btn-no">❌ 다시 설명해주세요</div>
+  </div>
+</section>
+
+<!-- 15~25: 실전 프롬프트 예시 -->
+<!-- 15. 캐릭터 ① -->
+<section>
+  <div class="badge badge-orange">실전 프롬프트 · 캐릭터</div>
+  <h2>🐶 클레이 강아지 마스코트</h2>
+  <div class="card mt20" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <div class="code-box code-box-sm" data-en="A cute clay animation style golden retriever puppy mascot, wearing a tiny barista apron, standing in a miniature coffee shop, warm and cozy atmosphere, soft studio lighting, 4K render" data-kr="귀여운 클레이 애니메이션 스타일의 골든리트리버 강아지 마스코트, 작은 바리스타 앞치마를 입고, 미니어처 커피숍 안에 서 있는, 따뜻하고 포근한 분위기, 부드러운 스튜디오 조명, 4K 렌더">A cute clay animation style golden retriever puppy mascot, wearing a tiny barista apron, standing in a miniature coffee shop, warm and cozy atmosphere, soft studio lighting, 4K render<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div>
+    <div class="tags mt12">
+      <span class="tag">대상: 골든리트리버</span>
+      <span class="tag tag-mint">스타일: 클레이</span>
+      <span class="tag tag-orange">배경: 커피숍</span>
+    </div>
+  </div>
+</section>
+
+<!-- 16. 캐릭터 ② -->
+<section>
+  <div class="badge badge-orange">실전 프롬프트 · 캐릭터</div>
+  <h2>🎨 지브리풍 직장인</h2>
+  <div class="card mt20" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <div class="code-box code-box-sm" data-en="Studio Ghibli animation style, a young Korean office worker sitting at a desk with a laptop, cherry blossom trees visible through the window, peaceful and dreamy mood, watercolor texture" data-kr="스튜디오 지브리 애니메이션 스타일, 노트북이 있는 책상에 앉아 있는 젊은 한국인 직장인, 창문 너머 벚꽃나무가 보이는, 평화롭고 몽환적인 분위기, 수채화 텍스처">Studio Ghibli animation style, a young Korean office worker sitting at a desk with a laptop, cherry blossom trees visible through the window, peaceful and dreamy mood, watercolor texture<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div>
+    <div class="tags mt12">
+      <span class="tag">대상: 직장인</span>
+      <span class="tag tag-mint">스타일: 지브리</span>
+      <span class="tag tag-orange">분위기: 몽환적</span>
+    </div>
+  </div>
+</section>
+
+<!-- 17. 상황 ① -->
+<section>
+  <div class="badge badge-orange">실전 프롬프트 · 상황</div>
+  <h2>☔ 비 오는 카페</h2>
+  <div class="card mt20" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <div class="code-box code-box-sm" data-en="A cozy cafe interior on a rainy day, warm lighting, rain droplets on the window glass, a steaming cup of latte on a wooden table, lo-fi aesthetic, soft bokeh, Sony A7IV 35mm" data-kr="비 오는 날의 아늑한 카페 내부, 따뜻한 조명, 유리창 위 빗방울, 나무 테이블 위 김이 나는 라떼 한 잔, 로파이 감성, 부드러운 보케, Sony A7IV 35mm">A cozy cafe interior on a rainy day, warm lighting, rain droplets on the window glass, a steaming cup of latte on a wooden table, lo-fi aesthetic, soft bokeh, Sony A7IV 35mm<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div>
+  </div>
+</section>
+
+<!-- 18. 상황 ② -->
+<section>
+  <div class="badge badge-orange">실전 프롬프트 · 상황</div>
+  <h2>🌙 네온 무인 아이스크림 매장</h2>
+  <div class="card mt20" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <div class="code-box code-box-sm" data-en="Neon-lit unmanned ice cream shop at night, glowing pink and blue signage, clean modern interior, glass display case with colorful ice cream, cyberpunk atmosphere, wide-angle lens" data-kr="야간 네온 조명의 무인 아이스크림 매장, 핑크와 블루로 빛나는 간판, 깔끔한 모던 인테리어, 다채로운 아이스크림이 담긴 유리 진열대, 사이버펑크 분위기, 광각 렌즈">Neon-lit unmanned ice cream shop at night, glowing pink and blue signage, clean modern interior, glass display case with colorful ice cream, cyberpunk atmosphere, wide-angle lens<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div>
+  </div>
+</section>
+
+<!-- 19. 4컷 가이드 ① -->
+<section>
+  <div class="badge badge-mint">실전 프롬프트 · 4컷 가이드</div>
+  <h2>🚻 화장실 안내 가이드</h2>
+  <div class="card mt20" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <div class="code-box code-box-sm" data-en="A 4-panel kawaii illustration guide for restroom directions: panel 1 shows a cute character at the entrance, panel 2 points to the hallway, panel 3 shows the turn, panel 4 arrives at the restroom door, pastel colors, simple and clear" data-kr="화장실 길 안내를 위한 4컷 카와이 일러스트 가이드: 1컷 입구의 귀여운 캐릭터, 2컷 복도를 가리키는 장면, 3컷 꺾이는 지점, 4컷 화장실 문 도착, 파스텔 색상, 심플하고 명확한">A 4-panel kawaii illustration guide for restroom directions: panel 1 shows a cute character at the entrance, panel 2 points to the hallway, panel 3 shows the turn, panel 4 arrives at the restroom door, pastel colors, simple and clear<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div>
+  </div>
+</section>
+
+<!-- 20. 4컷 가이드 ② -->
+<section>
+  <div class="badge badge-mint">실전 프롬프트 · 4컷 가이드</div>
+  <h2>☕ 무인카페 주문 안내</h2>
+  <div class="card mt20" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <div class="code-box code-box-sm" data-en="A 4-panel real photo style guide showing unmanned cafe ordering steps: panel 1 QR code scan, panel 2 menu selection on kiosk, panel 3 payment, panel 4 pickup from locker, clean modern interior, bright lighting" data-kr="무인카페 주문 과정을 보여주는 4컷 실사 스타일 가이드: 1컷 QR코드 스캔, 2컷 키오스크 메뉴 선택, 3컷 결제, 4컷 락커에서 픽업, 깔끔한 모던 인테리어, 밝은 조명">A 4-panel real photo style guide showing unmanned cafe ordering steps: panel 1 QR code scan, panel 2 menu selection on kiosk, panel 3 payment, panel 4 pickup from locker, clean modern interior, bright lighting<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div>
+  </div>
+</section>
+
+<!-- 21. 브랜드 캐릭터 ① -->
+<section>
+  <div class="badge badge-orange">실전 프롬프트 · 브랜드 캐릭터</div>
+  <h2>🍩 도넛 베이커리 마스코트</h2>
+  <div class="card mt20" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <div class="code-box code-box-sm" data-en="A glazed donut character mascot for a bakery brand, cute face with sprinkles, standing proudly in front of a pastel pink bakery shop, cheerful and playful mood, 3D clay render, soft shadows" data-kr="베이커리 브랜드를 위한 글레이즈드 도넛 캐릭터 마스코트, 스프링클이 달린 귀여운 얼굴, 파스텔 핑크 베이커리 가게 앞에 당당하게 서 있는, 밝고 장난스러운 분위기, 3D 클레이 렌더, 부드러운 그림자">A glazed donut character mascot for a bakery brand, cute face with sprinkles, standing proudly in front of a pastel pink bakery shop, cheerful and playful mood, 3D clay render, soft shadows<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div>
+  </div>
+</section>
+
+<!-- 22. 브랜드 캐릭터 ② -->
+<section>
+  <div class="badge badge-orange">실전 프롬프트 · 브랜드 캐릭터</div>
+  <h2>🤖 로봇 바리스타</h2>
+  <div class="card mt20" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <div class="code-box code-box-sm" data-en="A friendly robot barista character for an unmanned cafe, sleek white body with mint green accents, holding a latte cup, standing behind a modern coffee bar, futuristic yet warm atmosphere, 3D render" data-kr="무인카페를 위한 친근한 로봇 바리스타 캐릭터, 민트 그린 포인트가 있는 매끈한 화이트 바디, 라떼 잔을 들고, 모던 커피 바 뒤에 서 있는, 미래적이면서 따뜻한 분위기, 3D 렌더">A friendly robot barista character for an unmanned cafe, sleek white body with mint green accents, holding a latte cup, standing behind a modern coffee bar, futuristic yet warm atmosphere, 3D render<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div>
+  </div>
+</section>
+
+<!-- 23. 무인매장 ① -->
+<section>
+  <div class="badge badge-mint">실전 프롬프트 · 무인매장</div>
+  <h2>📱 QR 스캔 입장</h2>
+  <div class="card mt20" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <div class="code-box code-box-sm" data-en="A person scanning a QR code at the entrance of a modern unmanned store, glass door with digital display, clean white interior visible, bright daylight, editorial photography style, Canon EOS R5" data-kr="모던 무인 매장 입구에서 QR코드를 스캔하는 사람, 디지털 디스플레이가 있는 유리문, 깨끗한 화이트 인테리어가 보이는, 밝은 자연광, 에디토리얼 사진 스타일, Canon EOS R5">A person scanning a QR code at the entrance of a modern unmanned store, glass door with digital display, clean white interior visible, bright daylight, editorial photography style, Canon EOS R5<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div>
+  </div>
+</section>
+
+<!-- 24. 무인매장 ② -->
+<section>
+  <div class="badge badge-mint">실전 프롬프트 · 무인매장</div>
+  <h2>🌃 야간 무인 매장 외관</h2>
+  <div class="card mt20" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <div class="code-box code-box-sm" data-en="Exterior of a premium unmanned convenience store at night, warm interior lighting glowing through large glass windows, minimalist signage, wet pavement reflecting lights, cinematic mood, 35mm wide-angle" data-kr="야간 프리미엄 무인 편의점 외관, 넓은 유리창을 통해 비치는 따뜻한 실내 조명, 미니멀한 간판, 빛을 반사하는 젖은 도로, 시네마틱 분위기, 35mm 광각">Exterior of a premium unmanned convenience store at night, warm interior lighting glowing through large glass windows, minimalist signage, wet pavement reflecting lights, cinematic mood, 35mm wide-angle<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div>
+  </div>
+</section>
+
+<!-- 25. 보너스 - 에디토리얼 실사 -->
+<section>
+  <div class="badge badge-pink">BONUS · 에디토리얼 실사</div>
+  <h2>👘 한복 + 타임스퀘어</h2>
+  <div class="card mt20" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <div class="code-box code-box-sm" data-en="A Korean woman wearing a traditional hanbok in Times Square NYC, editorial fashion photography, golden hour sunlight, confident pose, shallow depth of field, Sony A7IV 85mm f/1.4, warm color grading" data-kr="뉴욕 타임스퀘어에서 전통 한복을 입은 한국 여성, 에디토리얼 패션 사진, 골든아워 햇빛, 당당한 포즈, 얕은 피사계 심도, Sony A7IV 85mm f/1.4, 따뜻한 색보정">A Korean woman wearing a traditional hanbok in Times Square NYC, editorial fashion photography, golden hour sunlight, confident pose, shallow depth of field, Sony A7IV 85mm f/1.4, warm color grading<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div>
+  </div>
+</section>
+
+<!-- 26. 실사 촬영 핵심 -->
+<section>
+  <div class="badge badge-blue">REAL PHOTO TIPS</div>
+  <h2>실사 촬영 <span class="hu d1">핵심 3가지</span></h2>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="card-icon">📷</div>
+      <div class="card-title">카메라 모델</div>
+      <div class="stat-desc">Sony A7IV, Canon R5 등<br>구체적으로 지정</div>
+    </div>
+    <div class="stat-card">
+      <div class="card-icon">💡</div>
+      <div class="card-title">조명 묘사</div>
+      <div class="stat-desc">자연광, 골든아워, 네온 등<br>입체감을 결정</div>
+    </div>
+    <div class="stat-card">
+      <div class="card-icon">🌡</div>
+      <div class="card-title">색온도 대비</div>
+      <div class="stat-desc">warm(3200K) vs cool(5600K)<br>분위기를 좌우</div>
+    </div>
+  </div>
+</section>
+
+<!-- 27. 소통 체크 ② -->
+<section class="interact">
+  <div class="interact-icon">✋</div>
+  <h2>프롬프트 작성 감 잡히시나요?</h2>
+  <p class="interact-sub">줌 채팅에 한마디 남겨주세요!</p>
+  <div class="interact-btns">
+    <div class="interact-btn btn-yes">👍 감 잡혔어요!</div>
+    <div class="interact-btn btn-no">🤔 아직 어려워요</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 실습 1 + 쉬는시간 (28~31)                                      -->
+<!-- ============================================================ -->
+
+<!-- 28. 실습 타이틀 -->
+<section>
+  <div class="badge badge-mint">PRACTICE 1</div>
+  <div class="section-title">실습 시간</div>
+  <p class="section-sub">Google Flow로 직접 이미지를 생성해봅니다</p>
+</section>
+
+<!-- 29. Step 1-2 -->
+<section>
+  <div class="badge badge-mint">STEP 1~2</div>
+  <h2>Flow 접속 → <span class="hu u-mint d1">프롬프트 입력</span></h2>
+  <div class="card mt20" style="max-width:550px; margin-left:auto; margin-right:auto;">
+    <div class="step">
+      <div class="step-n n-mint">1</div>
+      <div class="step-body"><h4>labs.google/flow 접속</h4><p>Chrome으로 접속 후 구글 로그인</p></div>
+    </div>
+    <div class="step mt12">
+      <div class="step-n n-mint">2</div>
+      <div class="step-body"><h4>프롬프트 복사 → 붙여넣기</h4><p>앞에서 본 프롬프트 중 마음에 드는 것을 복사해서 입력</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 30. Step 3-4 -->
+<section>
+  <div class="badge badge-mint">STEP 3~4</div>
+  <h2>비교 실험 → <span class="hu u-mint d1">키워드 변경</span></h2>
+  <div class="grid-2 mt20" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <div class="card">
+      <div class="step">
+        <div class="step-n n-mint">3</div>
+        <div class="step-body"><h4>Gemini / ChatGPT 비교</h4><p>같은 프롬프트를 <span class="hh h-mint d2">다른 도구</span>에도 넣어보세요</p></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="step">
+        <div class="step-n n-mint">4</div>
+        <div class="step-body"><h4>키워드 변경 실험</h4><p>스타일이나 분위기만 바꿔서 결과 차이를 확인!</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 31. 쉬는시간 -->
+<section class="break-slide">
+  <div class="break-icon">☕</div>
+  <h2>쉬는 시간</h2>
+  <div class="break-timer">10분</div>
+  <p class="dim small">잠시 쉬고 돌아올게요!</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- 2부 - QR코드 아트 (32~37)                                      -->
+<!-- ============================================================ -->
+
+<!-- 32. 섹션 타이틀 -->
+<section>
+  <div class="badge badge-mint">PART 2 · 20분</div>
+  <div class="section-title">AI <span class="hh h-mint d1">QR코드 아트</span></div>
+  <p class="section-sub">예쁜 그림이 담긴 QR코드를 직접 만듭니다</p>
+</section>
+
+<!-- 33. QR코드 아트란? -->
+<section>
+  <div class="badge badge-mint">핵심 개념</div>
+  <h2><span class="hc c-mint d1">QR코드 아트</span> 란?</h2>
+  <div class="card mt20" style="max-width:550px; margin-left:auto; margin-right:auto;">
+    <p style="font-size:0.8em; line-height:1.8;">
+      예쁜 그림이 들어있지만<br>
+      <span class="hh h-mint d2">스캔 기능은 100% 동일</span>한 QR코드<br><br>
+      일반 흑백 QR코드 대신, AI가 이미지를 합성하여<br>
+      디자인과 기능을 동시에 갖춘 QR코드를 만듭니다.
+    </p>
+  </div>
+</section>
+
+<!-- 34. 활용처 -->
+<section>
+  <div class="badge badge-mint">USE CASES</div>
+  <h2>어디에 쓸 수 있나요?</h2>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="card-icon">🏪</div>
+      <div class="card-title">매장 안내판</div>
+      <div class="stat-desc">메뉴, 와이파이, 주문</div>
+    </div>
+    <div class="stat-card">
+      <div class="card-icon">💳</div>
+      <div class="card-title">명함</div>
+      <div class="stat-desc">SNS, 포트폴리오 링크</div>
+    </div>
+    <div class="stat-card">
+      <div class="card-icon">📦</div>
+      <div class="card-title">포장</div>
+      <div class="stat-desc">제품 정보, 사용법</div>
+    </div>
+    <div class="stat-card">
+      <div class="card-icon">👤</div>
+      <div class="card-title">프로필</div>
+      <div class="stat-desc">인스타, 블로그</div>
+    </div>
+  </div>
+</section>
+
+<!-- 35. 플랫폼 소개 -->
+<section>
+  <div class="badge badge-mint">TOOL</div>
+  <h2>Hugging Face <span class="hu u-mint d1">QR Generator</span></h2>
+  <div class="card mt20" style="max-width:550px; margin-left:auto; margin-right:auto;">
+    <p style="font-size:0.8em; line-height:1.8;">
+      <strong>무료</strong>로 사용 가능한 AI QR코드 생성기<br><br>
+      이미지 업로드 + URL 입력 →<br>
+      AI가 이미지와 QR코드를 자연스럽게 합성
+    </p>
+  </div>
+</section>
+
+<!-- 36. 주의사항 -->
+<section>
+  <div class="badge badge-pink">NOTICE</div>
+  <h2>QR코드 아트 <span class="hu u-pink d1">주의사항</span></h2>
+  <div class="grid-2 mt20" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <div class="warn-box" style="margin-top:0;">
+      ⚠️ QR코드는 <span class="hb d2">30% 손상</span>까지 복구 가능<br><br>
+      너무 복잡한 이미지 → 인식률 저하
+    </div>
+    <div class="tip-box" style="margin-top:0;">
+      💡 생성 후 반드시 <strong>스마트폰으로 테스트</strong>!<br><br>
+      여러 기기에서 스캔 확인 필수
+    </div>
+  </div>
+</section>
+
+<!-- 37. 소통 체크 ③ -->
+<section class="interact">
+  <div class="interact-icon">📱</div>
+  <h2>QR코드 아트 만들어보고 싶으시나요?</h2>
+  <p class="interact-sub">줌 채팅에 남겨주세요!</p>
+  <div class="interact-btns">
+    <div class="interact-btn btn-yes">🔥 해볼래요!</div>
+    <div class="interact-btn btn-no">🤔 좀 더 알려주세요</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 실습 2 (38~40)                                                 -->
+<!-- ============================================================ -->
+
+<!-- 38. 실습 타이틀 -->
+<section>
+  <div class="badge badge-mint">PRACTICE 2</div>
+  <div class="section-title">QR코드 아트 실습</div>
+  <p class="section-sub">직접 QR코드 아트를 만들고 테스트합니다</p>
+</section>
+
+<!-- 39. Step 1-2 -->
+<section>
+  <div class="badge badge-mint">STEP 1~2</div>
+  <h2>이미지 준비 → <span class="hu u-mint d1">접속</span></h2>
+  <div class="card mt20" style="max-width:550px; margin-left:auto; margin-right:auto;">
+    <div class="step">
+      <div class="step-n n-mint">1</div>
+      <div class="step-body"><h4>1부에서 만든 이미지 다운로드</h4><p>마음에 드는 이미지를 저장해주세요</p></div>
+    </div>
+    <div class="step mt12">
+      <div class="step-n n-mint">2</div>
+      <div class="step-body"><h4>Hugging Face QR Generator 접속</h4><p>검색 또는 링크로 접속</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 40. Step 3-4 -->
+<section>
+  <div class="badge badge-mint">STEP 3~4</div>
+  <h2>생성 → <span class="hc c-mint d1">테스트</span></h2>
+  <div class="card mt20" style="max-width:550px; margin-left:auto; margin-right:auto;">
+    <div class="step">
+      <div class="step-n n-mint">3</div>
+      <div class="step-body"><h4>URL 입력 + 이미지 업로드</h4><p>연결할 링크와 이미지를 넣고 생성</p></div>
+    </div>
+    <div class="step mt12">
+      <div class="step-n n-mint">4</div>
+      <div class="step-body"><h4>스마트폰으로 스캔 테스트</h4><p><span class="hh h-mint d2">반드시 테스트!</span> 인식 안 되면 이미지 단순화</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 3부 - AI 영상 생성 (41~48)                                      -->
+<!-- ============================================================ -->
+
+<!-- 41. 섹션 타이틀 -->
+<section>
+  <div class="badge badge-orange">PART 3 · 30분</div>
+  <div class="section-title">AI <span class="hh h-yellow d1">영상 생성</span></div>
+  <p class="section-sub">이미지 1장으로 AI 동영상을 만듭니다</p>
+</section>
+
+<!-- 42. 핵심 개념 -->
+<section>
+  <div class="badge badge-orange">핵심 개념</div>
+  <h2>이미지 1장 + 프롬프트 = <span class="hc c-orange d1">영상</span></h2>
+  <div class="card mt20" style="max-width:550px; margin-left:auto; margin-right:auto;">
+    <p style="font-size:0.8em; line-height:1.8;">
+      Google Flow의 <span class="hh h-yellow d2">Veo 3.1</span> 모델이<br>
+      이미지를 분석하고, 프롬프트에 따라 움직임을 생성합니다.<br><br>
+      사진 1장 → 몇 초짜리 영상으로 변환!
+    </p>
+  </div>
+</section>
+
+<!-- 43. 크레딧 안내 -->
+<section>
+  <div class="badge badge-orange">CREDITS</div>
+  <h2>크레딧 <span class="hu u-orange d1">안내</span></h2>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="card-icon">🎨</div>
+      <div class="card-title">이미지 생성</div>
+      <div class="stat-desc"><strong style="color:var(--mint);">0 크레딧 (무료)</strong></div>
+    </div>
+    <div class="stat-card">
+      <div class="card-icon">🎬</div>
+      <div class="card-title">영상 생성</div>
+      <div class="stat-desc"><strong>20 크레딧 / 1편</strong></div>
+    </div>
+    <div class="stat-card">
+      <div class="card-icon">💎</div>
+      <div class="card-title">AI Pro 구독</div>
+      <div class="stat-desc">무료 크레딧 포함</div>
+    </div>
+  </div>
+</section>
+
+<!-- 44. 영상 프롬프트 - 사물 -->
+<section>
+  <div class="badge badge-orange">VIDEO PROMPT · 사물</div>
+  <h2>📦 사물/제품 영상화</h2>
+  <div class="card mt20" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <div class="step">
+      <div class="step-n n-orange">V1</div>
+      <div class="step-body"><h4>360도 회전</h4>
+        <div class="code-box code-box-xs" data-en="The object slowly rotates 360 degrees with shifting studio lighting" data-kr="오브젝트가 스튜디오 조명이 변하면서 천천히 360도 회전한다">The object slowly rotates 360 degrees with shifting studio lighting<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div></div>
+    </div>
+    <div class="step mt12">
+      <div class="step-n n-orange">V2</div>
+      <div class="step-body"><h4>줌인 디테일</h4>
+        <div class="code-box code-box-xs" data-en="Camera slowly zooms in to reveal fine details and textures" data-kr="카메라가 천천히 줌인하며 세밀한 디테일과 질감을 드러낸다">Camera slowly zooms in to reveal fine details and textures<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div></div>
+    </div>
+    <div class="step mt12">
+      <div class="step-n n-orange">V3</div>
+      <div class="step-body"><h4>배경 전환</h4>
+        <div class="code-box code-box-xs" data-en="Background gradually transforms from day to night while object stays still" data-kr="오브젝트는 가만히 있고 배경이 낮에서 밤으로 서서히 전환된다">Background gradually transforms from day to night while object stays still<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 45. 영상 프롬프트 - 인물 -->
+<section>
+  <div class="badge badge-orange">VIDEO PROMPT · 인물</div>
+  <h2>👤 인물/캐릭터 영상화</h2>
+  <div class="card mt20" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <div class="step">
+      <div class="step-n n-orange">V1</div>
+      <div class="step-body"><h4>머리카락 바람</h4>
+        <div class="code-box code-box-xs" data-en="Gentle breeze blows through hair, soft natural movement" data-kr="부드러운 바람이 머리카락 사이로 불며, 자연스러운 움직임">Gentle breeze blows through hair, soft natural movement<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div></div>
+    </div>
+    <div class="step mt12">
+      <div class="step-n n-orange">V2</div>
+      <div class="step-body"><h4>고개 돌림</h4>
+        <div class="code-box code-box-xs" data-en="Person slowly turns head toward camera with a gentle smile" data-kr="인물이 천천히 카메라를 향해 고개를 돌리며 부드럽게 미소짓는다">Person slowly turns head toward camera with a gentle smile<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div></div>
+    </div>
+    <div class="step mt12">
+      <div class="step-n n-orange">V3</div>
+      <div class="step-body"><h4>걷기 트래킹</h4>
+        <div class="code-box code-box-xs" data-en="Person walks forward, camera tracking alongside in smooth motion" data-kr="인물이 앞으로 걸으며, 카메라가 옆에서 부드럽게 따라간다">Person walks forward, camera tracking alongside in smooth motion<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 46. 영상 프롬프트 - 동물 -->
+<section>
+  <div class="badge badge-orange">VIDEO PROMPT · 동물</div>
+  <h2>🐶 동물/마스코트 영상화</h2>
+  <div class="card mt20" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <div class="step">
+      <div class="step-n n-orange">V1</div>
+      <div class="step-body"><h4>고개 갸우뚱</h4>
+        <div class="code-box code-box-xs" data-en="The animal tilts its head curiously to one side" data-kr="동물이 호기심 가득하게 고개를 한쪽으로 갸우뚱한다">The animal tilts its head curiously to one side<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div></div>
+    </div>
+    <div class="step mt12">
+      <div class="step-n n-orange">V2</div>
+      <div class="step-body"><h4>꼬리 흔들기</h4>
+        <div class="code-box code-box-xs" data-en="Tail wags excitedly with a happy expression" data-kr="행복한 표정으로 꼬리를 신나게 흔든다">Tail wags excitedly with a happy expression<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div></div>
+    </div>
+    <div class="step mt12">
+      <div class="step-n n-orange">V3</div>
+      <div class="step-body"><h4>카메라로 달려오기</h4>
+        <div class="code-box code-box-xs" data-en="The animal runs joyfully toward the camera" data-kr="동물이 신나게 카메라를 향해 달려온다">The animal runs joyfully toward the camera<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 47. 영상 프롬프트 - 건물 -->
+<section>
+  <div class="badge badge-orange">VIDEO PROMPT · 건물</div>
+  <h2>🏪 건물/매장 영상화</h2>
+  <div class="card mt20" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <div class="step">
+      <div class="step-n n-orange">V1</div>
+      <div class="step-body"><h4>낮→밤 타임랩스</h4>
+        <div class="code-box code-box-xs" data-en="Time-lapse from bright daylight to warm night illumination" data-kr="밝은 낮에서 따뜻한 야간 조명으로의 타임랩스">Time-lapse from bright daylight to warm night illumination<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div></div>
+    </div>
+    <div class="step mt12">
+      <div class="step-n n-orange">V2</div>
+      <div class="step-body"><h4>입구 접근</h4>
+        <div class="code-box code-box-xs" data-en="Camera slowly approaches the entrance, door opens revealing interior" data-kr="카메라가 천천히 입구에 다가가고, 문이 열리며 내부가 드러난다">Camera slowly approaches the entrance, door opens revealing interior<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div></div>
+    </div>
+    <div class="step mt12">
+      <div class="step-n n-orange">V3</div>
+      <div class="step-body"><h4>드론 상승</h4>
+        <div class="code-box code-box-xs" data-en="Drone view ascending upward revealing the full building and surroundings" data-kr="드론 시점이 위로 상승하며 건물 전체와 주변 환경을 드러낸다">Drone view ascending upward revealing the full building and surroundings<button class="lang-btn" onclick="toggleLang(this)">한글</button><button class="copy-btn" onclick="copyCode(this)">복사</button></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 48. 소통 체크 ④ -->
+<section class="interact">
+  <div class="interact-icon">🎬</div>
+  <h2>영상 만들 준비 되셨나요?</h2>
+  <p class="interact-sub">줌 채팅에 GO!</p>
+  <div class="interact-btns">
+    <div class="interact-btn btn-yes">🔥 GO!</div>
+    <div class="interact-btn btn-no">😅 아직요</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 실습 3 (49~51)                                                 -->
+<!-- ============================================================ -->
+
+<!-- 49. 실습 타이틀 -->
+<section>
+  <div class="badge badge-orange">PRACTICE 3</div>
+  <div class="section-title">이미지 → 영상 실습</div>
+  <p class="section-sub">1부에서 만든 이미지를 영상으로 변환합니다</p>
+</section>
+
+<!-- 50. Step 1-3 -->
+<section>
+  <div class="badge badge-orange">STEP 1~3</div>
+  <h2>영상 <span class="hu u-orange d1">생성하기</span></h2>
+  <div class="card mt20" style="max-width:550px; margin-left:auto; margin-right:auto;">
+    <div class="step">
+      <div class="step-n n-orange">1</div>
+      <div class="step-body"><h4>Flow에서 "Image to Video" 선택</h4><p>이미지 업로드 메뉴 진입</p></div>
+    </div>
+    <div class="step mt12">
+      <div class="step-n n-orange">2</div>
+      <div class="step-body"><h4>1부에서 만든 이미지 업로드</h4><p>마음에 드는 이미지를 선택</p></div>
+    </div>
+    <div class="step mt12">
+      <div class="step-n n-orange">3</div>
+      <div class="step-body"><h4>영상 프롬프트 입력 → V1, V2, V3 생성</h4><p>3가지 변형을 모두 만들어보고 <span class="hh h-yellow d2">다운로드</span>!</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 51. 소통 체크 ⑤ -->
+<section class="interact">
+  <div class="interact-icon">🎉</div>
+  <h2>영상 만드신 분!</h2>
+  <p class="interact-sub">채팅에 어떤 영상 만들었는지 공유해주세요!</p>
+  <div class="interact-btns">
+    <div class="interact-btn btn-yes">✅ 만들었어요!</div>
+    <div class="interact-btn btn-no">🔧 만드는 중</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 클로징 (52~55)                                                 -->
+<!-- ============================================================ -->
+
+<!-- 52. 적용 미션 -->
+<section>
+  <div class="badge badge-orange">MISSION</div>
+  <h2>수업 후 <span class="hu u-orange d1">적용 미션</span></h2>
+  <div class="mission-grid">
+    <div class="mission-card">
+      <h3>미션 1 — 이미지 3장 세트</h3>
+      <p>브랜드 캐릭터 + 상황 이미지 + 실사 비교<br>5요소 전부 포함해서 만들기</p>
+    </div>
+    <div class="mission-card">
+      <h3>미션 2 — QR코드 아트</h3>
+      <p>1부 이미지를 활용해 매장 안내, 메뉴, 길안내, 주차 안내 QR코드 제작</p>
+    </div>
+    <div class="mission-card">
+      <h3>미션 3 — 영상 3종</h3>
+      <p>이미지 1장으로 V1, V2, V3 영상 변형 → SNS/블로그/마케팅 활용</p>
+    </div>
+  </div>
+</section>
+
+<!-- 53. 단톡방 안내 -->
+<section>
+  <div class="badge badge-mint">COMMUNITY</div>
+  <h2>카카오 오픈채널 <span class="hu u-mint d1">안내</span></h2>
+  <div class="card mt20" style="max-width:550px; margin-left:auto; margin-right:auto;">
+    <p style="font-size:0.8em; line-height:1.8;">
+      AI 관련 정보를 서로 소통하며, 함께 발전하는 공간입니다.<br><br>
+      <strong>잔류 혜택:</strong><br>
+      공방 사장님들을 위한 웹서비스<br>
+      <span class="hb c-mint d2">핸즈룸</span> 런칭 시 <span class="hh h-mint d3">무료 사용 1개월 추가</span> 증정!
+    </p>
+  </div>
+</section>
+
+<!-- 54. 감사 인사 -->
+<section>
+  <div class="badge badge-blue">THANK YOU</div>
+  <h2>감사합니다</h2>
+  <div class="card mt20" style="max-width:550px; margin-left:auto; margin-right:auto; text-align:center;">
+    <p style="font-size:0.82em; line-height:1.8;">
+      오늘 배운 <span class="hu d1">프롬프트 5요소</span>를 기억하면<br>
+      어떤 새 도구가 나와도 바로 활용할 수 있습니다.<br><br>
+      <strong>같이 성장해요!</strong>
+    </p>
+  </div>
+</section>
+
+<!-- 55. Q&A -->
+<section class="interact">
+  <div class="interact-icon">💬</div>
+  <h2>Q&A 시간</h2>
+  <p class="interact-sub">궁금한 점이 있으시면 줌 채팅에 자유롭게 질문해주세요!</p>
+</section>
+
+</div><!-- /slides -->
+</div><!-- /reveal -->
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script>
+Reveal.initialize({
+  hash: true, slideNumber: false, transition: 'slide',
+  transitionSpeed: 'default', controls: false,
+  progress: false, center: true, width: 1280, height: 720,
+  margin: 0.04, overview: false, fragments: false,
+  mouseWheel: true
+});
+
+Reveal.on('slidechanged', e => updateProgress());
+Reveal.on('ready', e => {
+  document.getElementById('totalPages').textContent = Reveal.getTotalSlides();
+  updateProgress();
+});
+
+function updateProgress() {
+  const idx = Reveal.getSlidePastCount();
+  const total = Reveal.getTotalSlides();
+  document.getElementById('progressBar').style.width = (idx / (total - 1)) * 100 + '%';
+  document.getElementById('currentPage').textContent = idx + 1;
+}
+
+const originalHTML = document.querySelector('.reveal .slides').innerHTML;
+let snapshotHTML = originalHTML;
+
+document.getElementById('navLeft').addEventListener('click', () => Reveal.prev());
+document.getElementById('navRight').addEventListener('click', () => Reveal.next());
+
+let editMode = false;
+const editBar = document.getElementById('editBar');
+const editToggle = document.getElementById('editToggle');
+const floatToolbar = document.getElementById('floatToolbar');
+
+function enterEditMode() {
+  editMode = true;
+  snapshotHTML = document.querySelector('.reveal .slides').innerHTML;
+  editBar.classList.add('open');
+  editToggle.classList.add('active');
+  document.body.classList.add('editing-active');
+  makeCurrentEditable();
+}
+function exitEditMode(discard) {
+  editMode = false;
+  editBar.classList.remove('open');
+  editToggle.classList.remove('active');
+  document.body.classList.remove('editing-active');
+  floatToolbar.classList.remove('show');
+  document.getElementById('fxPanel').classList.remove('open');
+  document.querySelectorAll('.reveal .slides section').forEach(s => { s.contentEditable='false'; s.style.cursor=''; });
+  if (discard) {
+    document.querySelector('.reveal .slides').innerHTML = snapshotHTML;
+    Reveal.sync(); Reveal.slide(Reveal.getState().indexh);
+  }
+}
+function makeCurrentEditable() {
+  document.querySelectorAll('.reveal .slides section').forEach(s => { s.contentEditable='false'; s.style.cursor=''; });
+  const current = Reveal.getCurrentSlide();
+  if (current && editMode) { current.contentEditable='true'; current.style.cursor='text'; }
+}
+
+editToggle.addEventListener('click', () => { if (editMode) exitEditMode(); else enterEditMode(); });
+
+document.getElementById('btnSave').addEventListener('click', () => {
+  const slides = document.querySelectorAll('.reveal .slides section');
+  const data = {}; slides.forEach((s,i) => data[i]=s.innerHTML);
+  localStorage.setItem('markclass_day2_edits', JSON.stringify(data));
+  alert('저장 완료!');
+});
+document.getElementById('btnReset').addEventListener('click', () => {
+  if (confirm('모든 수정을 원래대로 되돌리시겠습니까?')) {
+    localStorage.removeItem('markclass_day2_edits');
+    document.querySelector('.reveal .slides').innerHTML = originalHTML;
+    Reveal.sync(); Reveal.slide(Reveal.getState().indexh); exitEditMode();
+  }
+});
+document.getElementById('btnEditClose').addEventListener('click', () => exitEditMode(true));
+
+document.getElementById('btnFxPanel').addEventListener('click', () => { document.getElementById('fxPanel').classList.toggle('open'); });
+document.getElementById('fxPanelClose').addEventListener('click', () => { document.getElementById('fxPanel').classList.remove('open'); });
+document.querySelectorAll('.fx-pick').forEach(btn => { btn.addEventListener('click', () => { document.querySelectorAll('.fx-pick').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }); });
+document.querySelectorAll('.fx-delay').forEach(btn => { btn.addEventListener('click', () => { document.querySelectorAll('.fx-delay').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }); });
+
+document.getElementById('fxApply').addEventListener('click', () => {
+  const sel = window.getSelection();
+  if (!sel.rangeCount || sel.isCollapsed) { alert('텍스트를 먼저 드래그해주세요'); return; }
+  const activeFx = document.querySelector('.fx-pick.active');
+  const activeDelay = document.querySelector('.fx-delay.active');
+  if (!activeFx) return;
+  const fxType = activeFx.dataset.type;
+  const delay = activeDelay ? activeDelay.dataset.delay : '';
+  try {
+    const range = sel.getRangeAt(0); const span = document.createElement('span');
+    fxType.split(' ').forEach(c => span.classList.add(c));
+    if (delay) span.classList.add(delay);
+    if (fxType.startsWith('hb')) span.style.margin='0 8px';
+    if (fxType.startsWith('hc')) span.style.margin='0 10px';
+    range.surroundContents(span); sel.removeAllRanges();
+  } catch(e) { alert('효과를 적용할 수 없는 영역입니다.'); }
+});
+document.getElementById('fxRemove').addEventListener('click', () => {
+  const sel = window.getSelection();
+  if (!sel.rangeCount || sel.isCollapsed) { alert('효과가 적용된 텍스트를 드래그해주세요'); return; }
+  const parent = sel.getRangeAt(0).startContainer.parentElement;
+  if (parent && (parent.classList.contains('hb')||parent.classList.contains('hc')||parent.classList.contains('hu')||parent.classList.contains('hh')||parent.classList.contains('hs'))) {
+    parent.parentNode.replaceChild(document.createTextNode(parent.textContent), parent);
+  }
+});
+
+Reveal.on('slidechanged', () => { if (editMode) makeCurrentEditable(); floatToolbar.classList.remove('show'); });
+
+const SAVE_VERSION = 'v1';
+(function loadEdits() {
+  const ver = localStorage.getItem('markclass_day2_version');
+  if (ver !== SAVE_VERSION) { localStorage.removeItem('markclass_day2_edits'); localStorage.setItem('markclass_day2_version', SAVE_VERSION); return; }
+  const raw = localStorage.getItem('markclass_day2_edits');
+  if (!raw) return;
+  try { const data = JSON.parse(raw); document.querySelectorAll('.reveal .slides > section').forEach((s,i) => { if(data[i]) s.innerHTML=data[i]; }); } catch(e) {}
+})();
+
+document.addEventListener('mouseup', e => {
+  if (!editMode) return;
+  if (floatToolbar.contains(e.target)) return;
+  setTimeout(() => {
+    const sel = window.getSelection();
+    if (sel.rangeCount > 0 && !sel.isCollapsed) {
+      const rect = sel.getRangeAt(0).getBoundingClientRect();
+      floatToolbar.style.left = Math.max(10, rect.left + rect.width/2 - 150) + 'px';
+      floatToolbar.style.top = Math.max(50, rect.top - 46) + 'px';
+      floatToolbar.classList.add('show');
+    } else { floatToolbar.classList.remove('show'); }
+  }, 10);
+});
+
+document.getElementById('ftFontSize').addEventListener('change', e => {
+  const v = e.target.value; if (!v) return;
+  document.execCommand('fontSize', false, '7');
+  document.querySelectorAll('font[size="7"]').forEach(f => { f.removeAttribute('size'); f.style.fontSize = v+'px'; });
+  e.target.value = '';
+});
+document.getElementById('ftBold').addEventListener('click', () => document.execCommand('bold'));
+document.getElementById('ftColor').addEventListener('input', e => document.execCommand('foreColor', false, e.target.value));
+
+document.querySelectorAll('.ft-btn[data-fx]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const fx = btn.dataset.fx; const sel = window.getSelection();
+    if (!sel.rangeCount || sel.isCollapsed) return;
+    if (fx === 'remove') {
+      const parent = sel.getRangeAt(0).startContainer.parentElement;
+      if (parent && (parent.classList.contains('hb')||parent.classList.contains('hc')||parent.classList.contains('hu')||parent.classList.contains('hh')||parent.classList.contains('hs'))) {
+        parent.parentNode.replaceChild(document.createTextNode(parent.textContent), parent);
+      }
+      return;
+    }
+    try {
+      const range = sel.getRangeAt(0); const span = document.createElement('span');
+      fx.split(' ').forEach(c => span.classList.add(c));
+      if (fx==='hb') span.style.margin='0 8px';
+      if (fx==='hc') span.style.margin='0 10px';
+      range.surroundContents(span); sel.removeAllRanges();
+    } catch(e) {}
+  });
+});
+
+let dragSrcIdx = null;
+function buildOverview() {
+  const grid = document.getElementById('overviewGrid'); grid.innerHTML = '';
+  const slides = document.querySelectorAll('.reveal .slides > section');
+  const currentIdx = Reveal.getState().indexh;
+  slides.forEach((slide, i) => {
+    const item = document.createElement('div');
+    item.className = 'overview-item' + (i===currentIdx?' active':'');
+    item.draggable = true; item.dataset.idx = i;
+    const num = document.createElement('div'); num.className='overview-num'; num.textContent=(i+1); item.appendChild(num);
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'width:1280px;height:720px;transform-origin:0 0;pointer-events:none;padding:30px 50px;box-sizing:border-box;font-family:Pretendard Variable,sans-serif;font-size:18px;text-align:center;display:flex;flex-direction:column;justify-content:center;overflow:hidden;';
+    wrapper.innerHTML = slide.innerHTML; item.appendChild(wrapper);
+    item.addEventListener('click', () => { Reveal.slide(i); closeOverview(); });
+    item.addEventListener('dragstart', e => { dragSrcIdx=parseInt(item.dataset.idx); item.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; });
+    item.addEventListener('dragend', () => { item.classList.remove('dragging'); grid.querySelectorAll('.overview-item').forEach(el=>el.classList.remove('drag-over')); });
+    item.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect='move'; item.classList.add('drag-over'); });
+    item.addEventListener('dragleave', () => { item.classList.remove('drag-over'); });
+    item.addEventListener('drop', e => {
+      e.preventDefault(); const dropIdx=parseInt(item.dataset.idx);
+      if (dragSrcIdx===null||dragSrcIdx===dropIdx) return;
+      const sc=document.querySelector('.reveal .slides'); const all=[...sc.querySelectorAll(':scope > section')];
+      if (dragSrcIdx<dropIdx) sc.insertBefore(all[dragSrcIdx], all[dropIdx].nextSibling);
+      else sc.insertBefore(all[dragSrcIdx], all[dropIdx]);
+      Reveal.sync(); Reveal.slide(dropIdx); buildOverview();
+    });
+    grid.appendChild(item);
+  });
+  requestAnimationFrame(() => {
+    const items = grid.querySelectorAll('.overview-item');
+    const sizes = [];
+    items.forEach(item => sizes.push(item.offsetWidth));
+    items.forEach((item, i) => {
+      const scale = sizes[i] / 1280;
+      const wr = item.querySelector('div:last-child');
+      if(wr){ wr.style.transform='scale('+scale+')'; item.style.height=(720*scale)+'px'; }
+    });
+  });
+}
+function openOverview() { buildOverview(); document.getElementById('overviewOverlay').classList.add('open'); }
+function closeOverview() { document.getElementById('overviewOverlay').classList.remove('open'); }
+document.getElementById('overviewToggle').addEventListener('click', () => openOverview());
+document.getElementById('overviewClose').addEventListener('click', () => closeOverview());
+
+function toggleLang(btn) {
+  const box = btn.parentElement;
+  const en = box.dataset.en;
+  const kr = box.dataset.kr;
+  if (!en || !kr) return;
+  const isKr = btn.classList.contains('active');
+  // 텍스트 노드만 교체 (버튼 유지)
+  const textNode = box.firstChild;
+  if (isKr) {
+    textNode.textContent = en;
+    btn.classList.remove('active');
+    btn.textContent = '한글';
+  } else {
+    textNode.textContent = kr;
+    btn.classList.add('active');
+    btn.textContent = 'ENG';
+  }
+}
+
+function copyCode(btn) {
+  const box = btn.parentElement;
+  // data 속성이 있으면 현재 언어 텍스트 복사, 없으면 첫 텍스트노드
+  const isKr = box.querySelector('.lang-btn.active');
+  let code;
+  if (box.dataset.en) {
+    code = isKr ? box.dataset.kr : box.dataset.en;
+  } else {
+    code = box.firstChild.textContent.trim();
+  }
+  navigator.clipboard.writeText(code).then(() => { btn.textContent='복사됨!'; setTimeout(()=>btn.textContent='복사',1500); }).catch(()=>{});
+}
+</script>
+</body>
+</html>
