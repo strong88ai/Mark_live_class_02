@@ -222,6 +222,60 @@
 </head>
 <body>
 
+<!-- 로그인 오버레이 -->
+<div id="loginOverlay" style="
+  position:fixed; inset:0; z-index:99999;
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Pretendard Variable',sans-serif;
+">
+  <div style="
+    background:#fff; border-radius:20px; padding:48px 40px; width:340px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.08); border:1px solid rgba(0,0,0,0.06);
+    text-align:center;
+  ">
+    <div style="font-size:2.4em; margin-bottom:8px;">🔐</div>
+    <h2 style="font-size:1.4em; font-weight:900; color:var(--text); margin:0 0 6px;">수업 자료 열람</h2>
+    <p style="font-size:0.85em; color:var(--dim); margin:0 0 28px;">수강생 전용 콘텐츠입니다.<br>비밀번호를 입력해 주세요.</p>
+    <input id="loginPw" type="password" placeholder="비밀번호 입력" style="
+      width:100%; box-sizing:border-box; padding:14px 16px; font-size:1em;
+      border:2px solid #e0dee8; border-radius:12px; outline:none;
+      font-family:'Pretendard Variable',sans-serif;
+      transition:border-color 0.2s;
+    " onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='#e0dee8'">
+    <div id="loginError" style="color:var(--pink); font-size:0.8em; margin-top:8px; min-height:1.2em;"></div>
+    <button id="loginBtn" style="
+      width:100%; padding:14px; margin-top:8px; font-size:1em; font-weight:700;
+      background:var(--accent); color:#fff; border:none; border-radius:12px;
+      cursor:pointer; font-family:'Pretendard Variable',sans-serif;
+      transition:background 0.2s;
+    " onmouseover="this.style.background='#3451d1'" onmouseout="this.style.background='var(--accent)'">입장하기</button>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY='markclass_auth', PW='8000';
+  if(sessionStorage.getItem(KEY)==='ok'){
+    document.getElementById('loginOverlay').style.display='none';
+  }
+  function doLogin(){
+    var v=document.getElementById('loginPw').value;
+    if(v===PW){
+      sessionStorage.setItem(KEY,'ok');
+      document.getElementById('loginOverlay').style.display='none';
+    } else {
+      document.getElementById('loginError').textContent='비밀번호가 올바르지 않습니다.';
+      document.getElementById('loginPw').value='';
+      document.getElementById('loginPw').focus();
+    }
+  }
+  document.getElementById('loginBtn').addEventListener('click',doLogin);
+  document.getElementById('loginPw').addEventListener('keydown',function(e){
+    if(e.key==='Enter') doLogin();
+  });
+})();
+</script>
+
 <div class="progress-bar-custom" id="progressBar"></div>
 
 <div class="overview-overlay" id="overviewOverlay">
